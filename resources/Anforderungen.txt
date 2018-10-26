@@ -1,0 +1,31 @@
+Stakeholder: Teilnehmer, Universität, Aussenstehender(Hacker)
+
+Use-Case:
+1. Als Teilnehmer möchte ich aktivierte Challenges sehen können.
+2. Als Teilnehmer möchte ich Flags submitten können.
+3. Als Teilnehmer möchte ich Punkte für meine Flags bekommen.
+4. Als Teilnehmer möchte ich sehen können, wie viele Punkte ich habe.
+5. Als Teilnehmer möchte ich andere Teams und deren Punkte sehen können.
+6. Als Teilnehmer möchte ich einen Alias (öffentlich) verwenden können um nicht meinen richtigen Namen preis zu geben.
+
+1. Als Universität möchte ich nach SSE-TeilnehmerTeams filtern können.
+2. Als Universität möchte ich nach On-sidte Team filtern können.
+3. Als Universität möchte ich Teams eintragen/aktualisieren/löschen können.
+4. Als Universität möchte ich Challenges eintragen/aktualisieren/löschen können.
+5. Als Universität möchte ich bei Challenges Punkte vergeben können.
+6. Als Universität möchte ich Challenges aktivieren und deaktivieren können.
+7. Als Universität möchte ich sehen welches Team welche Challenges gelöst hat.
+
+Mis Use-Case:
+1. Als Teilnehmer möchte ich nicht, dass andere meine Daten einsehen/ändern können.
+2. Als Teilnehmer möchte ich nicht, dass andere sich als ich anmelden können.
+
+1. Als Universität möchte ich nicht, dass jemand Flags auslesen kann.
+2. Als Universität möchte ich nicht, dass jemand auf die Datenbank zugreifen kann.
+3. Als Universität möchte ich nicht, dass jemand Flags für andere submitten kann.
+4. Als Universität möchte ich nicht, dass jemand die Verfügbarkeit der Server störrt.
+5. Als Universität möchte ich nicht, dass jemand die Team nach dem Start der Veranstaltung die Teams ändern kann.
+6. Als Universität möchte ich nicht, dass jemand die Server übernehmen kann.
+7. Als Universität möchte ich nicht, dass jemand die Verfügbarkeit der Services störrt.
+8. Als Universität möchte ich nicht, dass jemand sich selbst Punkte geben kann.
+9. Als Universität möchte ich nicht, dass jemand die Flags bruteforcen kann.

@@ -1,0 +1,24 @@
+{
+  "name": "sse-masterserver",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sh4d0w",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongoose": "^5.3.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Patrick-DE/<path>"
+  },
+  "bugs": {
+    "url": "https://github.com/Patrick-DE/<path>/issues"
+  },
+  "homepage": "https://github.com/Patrick-DE/<path>#readme",
+  "description": ""
+}
