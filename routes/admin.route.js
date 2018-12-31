@@ -35,12 +35,12 @@ router.delete('/team/:id', Verify.AdminToken, admin_controller.team_delete);
 //============================================================
 
 //submit new challenge
-router.post('challenge/', Verify.AdminToken, challenge_controller.challenge_create);
+router.post('challenge/', Verify.AdminToken, admin_controller.challenge_create);
 
 //Update a challenge
-router.put('challenge/:id', Verify.AdminToken, challenge_controller.challenge_update);
+router.put('challenge/:id', Verify.AdminToken, admin_controller.challenge_update);
 
 //Delete a challenge
-router.delete('challenge/:id', Verify.AdminToken, challenge_controller.challenge_delete);
+router.delete('challenge/:id', Verify.AdminToken, admin_controller.challenge_delete);
 
 module.exports = router;

@@ -109,15 +109,23 @@ exports.team_submit_flag = function(req, res, next) {
                 if (err) return res.status(500).send({submit: false, message: "Error while processing your team. Please report back!"});
                 if (!team_id) return res.status(400).send({submit: false, message: "Please join a team."});
 
-                Team.findByIdAndUpdate(team_id, {
+                Challenge.findByIdAndUpdate(challenge._id, {
                     $addToSet: { 
-                        solved_challenges: challenge._id
+                        solved_by: team_id
                     }
-                },{new: true}).exec(function(err, team){
-                    if (err || !team) return res.status(500).send({submit: false, message: "Error while saving the flag. Please report back!"});
+                }).exec(function(err, challenge){
+                    if (err || !challenge) return res.status(500).send({submit: false, message: "Error while registering points. Please report back!"});
                     
-                    return res.status(200).send({submit: true, team: team});
-                })
+                    Team.findByIdAndUpdate(team_id, {
+                        $addToSet: { 
+                            solved_challenges: challenge._id
+                        }
+                    },{new: true}).exec(function(err, team){
+                        if (err || !team) return res.status(500).send({submit: false, message: "Error while saving the flag. Please report back!"});
+                        
+                        return res.status(201).send({submit: true, team: team});
+                    });
+                });
             });
             /*Team.findOne({'members': req.userId}, {$set: { 'members.$[]' : req.userId}}).exec(function(err, team){
                 console.log(err);
