@@ -1,14 +1,32 @@
+require('dotenv').load({ path: __dirname + '/.env'}); //process.env.SECRET
+
 const express = require('express');
-//require('./models/dummyData.model');
+const path = require('path');
+const bodyParser = require('body-parser');
 
 // create the app
 const app = express();
 
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }))
+// parse requests of content-type - application/json
+app.use(bodyParser.json())
+
+//require('./models/dummyData.model');
+
 // Require routes
-var buddy = require('./routes/challenge.route');
-app.use('/challenge', buddy);
-var buddy = require('./routes/flag.route');
-app.use('/flag', buddy);
+var challenge = require('./routes/challenge.route');
+app.use('/challenge', challenge);
+var team = require('./routes/team.route');
+app.use('/team', team);
+var user = require('./routes/user.route');
+app.use('/user', user);
+var admin = require('./routes/admin.route');
+app.use('/admin', admin);
+
+var auth = require('./routes/chal_auth.route');
+app.use('/', auth); //webroot
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 

@@ -3,22 +3,27 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "sh4d0w",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
-    "mongoose": "^5.3.1"
+    "mongoose": "^5.3.1",
+    "body-parser": "^1.18.3",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^6.2.0",
+    "jsonwebtoken": "^8.4.0"
   },
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Patrick-DE/<path>"
+    "url": "git+https://github.com/Patrick-DE/hs-ma-sse-masterserver.git"
   },
   "bugs": {
-    "url": "https://github.com/Patrick-DE/<path>/issues"
+    "url": "https://github.com/Patrick-DE/hs-ma-sse-masterserver/issues"
   },
-  "homepage": "https://github.com/Patrick-DE/<path>#readme",
+  "homepage": "https://github.com/Patrick-DE/hs-ma-sse-masterserver#readme",
   "description": ""
 }
