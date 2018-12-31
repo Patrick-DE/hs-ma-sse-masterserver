@@ -100,22 +100,24 @@ exports.team_delete_member = function(req, res, next) {
 
 // Submit flag via POST.
 exports.team_submit_flag = function(req, res, next) {
+    // check if flag exists
     Challenge.findOne( {flag: req.body.flag }, function(err, challenge){
         if (err) return res.status(500).send({submit: false, message: "Error while processing the challenge. Please report back!"});
         if (!challenge){
             return res.status(400).send({submit: false, message: "You submitted an invalid flag!"});
         }else{
+            // what is the users team
             getTeamId(req.userId, function(err, team_id){
                 if (err) return res.status(500).send({submit: false, message: "Error while processing your team. Please report back!"});
                 if (!team_id) return res.status(400).send({submit: false, message: "Please join a team."});
-
+                // if user has a team update challenge
                 Challenge.findByIdAndUpdate(challenge._id, {
                     $addToSet: { 
                         solved_by: team_id
                     }
                 }).exec(function(err, challenge){
                     if (err || !challenge) return res.status(500).send({submit: false, message: "Error while registering points. Please report back!"});
-                    
+                    // if challenge was updated update team
                     Team.findByIdAndUpdate(team_id, {
                         $addToSet: { 
                             solved_challenges: challenge._id

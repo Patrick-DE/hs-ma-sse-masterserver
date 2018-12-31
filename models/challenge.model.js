@@ -7,7 +7,7 @@ var challengeSchema = new Schema({
     activated: { type: Boolean, required: true, default: false},
     name: { type: String, required: true},
     description: String,
-    flag: { type: String, select: false },
+    flag: { type: String, select: false, unique: true },
     solved_by: [ {type: mongoose.Schema.ObjectId, ref: 'teams'} ]
 });
 
