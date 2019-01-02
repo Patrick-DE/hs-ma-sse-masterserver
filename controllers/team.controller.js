@@ -25,9 +25,15 @@ exports.team_detail = function(req, res) {
 exports.team_create = function(req, res, next) {
     var newTeam = new Team(req.body);
     newTeam.members[0] = req.userId;
-    newTeam.save(function(err) {
-        if (err) return res.status(500).send(err.message);
-        res.status(201).send(newTeam);
+    newTeam.save(function(err, team) {
+        if (err && err.code == 11000){
+            return res.status(500).send("The team does already exist.");
+        }else if(err){
+            return res.status(500).send(err.message);
+        }
+        User.findByIdAndUpdate(req.userId, {team: team._id}, function(err, user){
+            res.status(201).send(newTeam);
+        })
     });
 };
 
@@ -35,7 +41,8 @@ exports.team_create = function(req, res, next) {
 exports.team_delete = function(req, res, next) {
     getTeamId(req.userId, function(err, team_id){
         if (err) return res.status(500).send(err.message);
-        
+        if (!team_id) return res.status(500).send("The team was not found.");
+
         Team.findByIdAndDelete(team_id, function(err, team){
             if (err) return res.status(500).send(err.message);
             res.send(team);
@@ -64,7 +71,7 @@ exports.team_add_member = function(req, res, next) {
         if (err) return res.status(500).send({submit: false, message: "Error while processing your team. Please report back!"});
         if (!team_id) return res.status(400).send({submit: false, message: "Please join a team."});
 
-        User.findById(req.body.id, function(err, user){
+        User.findByIdAndUpdate(req.body.id, {team: team_id}, function(err, user){
             if (err) return res.status(500).send({submit: false, message: "Error while processing your added user. Please report back!"});
             if (!user) return res.status(400).send({submit: false, message: "User "+req.body.id+" does not exist."});
 
@@ -93,7 +100,11 @@ exports.team_delete_member = function(req, res, next) {
             }
         }, {new: true}).exec(function(err, team){
             if (err) return res.status(500).send(err.message);
-            res.send(team);
+
+            User.findByIdAndUpdate(req.params.id, {team: undefined}, function(err, user){
+                if (err) return res.status(500).send(err.message);
+                res.send(team);
+            });
         });
     });
 };

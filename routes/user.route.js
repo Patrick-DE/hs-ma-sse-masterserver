@@ -13,4 +13,7 @@ router.put('/', Verify.Token, user_controller.user_update);
 //Delete my user
 router.delete('/', Verify.Token, user_controller.user_delete);
 
+//Delete my team
+router.delete('/team', Verify.Token, user_controller.user_team_delete);
+
 module.exports = router;

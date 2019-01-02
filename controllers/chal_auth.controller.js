@@ -9,7 +9,7 @@ var bcrypt = require('bcryptjs');
 
 exports.user_login = function (req, res) {
 	//USED FOR CHALLENGE
-	User.findOne({ email: req.body.email }).select("+password +admin +blocked +email").exec(function (err, user) {
+	User.findOne({ alias: req.body.alias }).select("+password +admin +blocked").exec(function (err, user) {
 		if (err) return res.status(500).send('Error on the server.');
 		if (!user) return res.status(404).send('No matching user found.');
 		if (user.blocked) return res.status(403).send('You have been blocked for violating the rules!');
@@ -22,7 +22,8 @@ exports.user_login = function (req, res) {
 		var token = create_token(user, req.ip);
 
 		// return the information including token as JSON
-		res.status(200).send({ auth: true, token: token });
+		res.set('location', '/scoreboard.html');
+		res.status(301).send({ auth: true, token: token })
 	});
 };
 
@@ -43,7 +44,8 @@ exports.user_register = function (req, res) {
 		// if user is registered without errors create a token
 		var token = create_token(user, req.ip);
 
-		res.status(200).send({ auth: true, token: token });
+		res.set('location', '/scoreboard.html');
+   		res.status(301).send({ auth: true, token: token })
 	});
 };
 
