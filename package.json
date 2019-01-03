@@ -14,7 +14,8 @@
     "body-parser": "^1.18.3",
     "bcryptjs": "^2.4.3",
     "dotenv": "^6.2.0",
-    "jsonwebtoken": "^8.4.0"
+    "jsonwebtoken": "^8.4.0",
+    "ejs": "^1.0.0"
   },
   "devDependencies": {},
   "repository": {

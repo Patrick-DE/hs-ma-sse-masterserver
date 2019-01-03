@@ -1,0 +1,22 @@
+<% include ../partials/head %>
+
+<main>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">    
+            <div class="jumbotron">
+                <h2>Variable</h2>
+                <p><%= tagline %></p>
+            </div>
+            <div class="jumbotron">
+                <h2>Loop</h2>
+                <ul>
+                    <% drinks.forEach(function(drink) { %>
+                        <li><%= drink.name %> - <%= drink.drunkness %></li>
+                    <% }); %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+
+<% include ../partials/footer %>

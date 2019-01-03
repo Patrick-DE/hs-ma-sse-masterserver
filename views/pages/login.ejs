@@ -1,0 +1,27 @@
+<% include ../partials/head %>
+
+<main class="">
+    <div class="login-page">
+        <div class="form">
+            <form class="register-form" id="registerForm">
+                <input type="text" autocomplete="off" name="name" placeholder="name" required />
+                <input type="text" autocomplete="off" name="surename" placeholder="surename" />
+                <input type="text" autocomplete="off" name="alias" placeholder="alias (will be displayed)" required />
+                <input type="password" autocomplete="off" name="password" placeholder="password" required />
+                <button id="create">create</button>
+                <p class="message">Already registered? <a href="#">Sign In</a></p>
+            </form>
+            <form class="login-form" id="loginForm">
+                <input type="text" autocomplete="off" name="alias" placeholder="alias" required />
+                <input type="password" autocomplete="off" name="password" placeholder="password" required />
+                <button id="login">login</button>
+                <p class="message">Not registered? <a href="#">Create an account</a></p>
+            </form>
+        </div>
+    </div>
+</main>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="js/login.js"></script>
+
+<% include ../partials/footer %>
+

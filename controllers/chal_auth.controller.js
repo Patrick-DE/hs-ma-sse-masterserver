@@ -22,8 +22,9 @@ exports.user_login = function (req, res) {
 		var token = create_token(user, req.ip);
 
 		// return the information including token as JSON
-		res.set('location', '/scoreboard.html');
-		res.status(301).send({ auth: true, token: token })
+		//res.set('location', '/scoreboard');
+		//res.status(301).send({ auth: true, token: token })
+		res.status(200).send({ auth: true, token: token });
 	});
 };
 
@@ -44,8 +45,7 @@ exports.user_register = function (req, res) {
 		// if user is registered without errors create a token
 		var token = create_token(user, req.ip);
 
-		res.set('location', '/scoreboard.html');
-   		res.status(301).send({ auth: true, token: token })
+		res.status(200).send({ auth: true, token: token });
 	});
 };
 
