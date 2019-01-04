@@ -2,19 +2,41 @@
 
 <main>
     <div class="row">
-        <div class="col-md-offset-1 col-md-10">    
-            <div class="jumbotron">
-                <h2>Variable</h2>
-                <p><%= tagline %></p>
-            </div>
-            <div class="jumbotron">
-                <h2>Loop</h2>
-                <ul>
-                    <% drinks.forEach(function(drink) { %>
-                        <li><%= drink.name %> - <%= drink.drunkness %></li>
-                    <% }); %>
-                </ul>
-            </div>
+        <div class="container">    
+            <h2>Variable</h2>
+            <p><%= tagline %></p>
+
+            <h2>Loop</h2>
+            <table>
+            <tr>
+                <th>Teamname</th>
+                <th>Hamburg</th>
+                <th>München</th>
+            </tr>
+                <% teams.forEach(function(team) { %>
+                    <li><%= team.on_site %> - <%= team.drunkness %></li>
+                <% }); %>
+                <tr>
+                    <th>Berlin</th>
+                    <th>Hamburg</th>
+                    <th>München</th>
+                </tr>
+                <tr>
+                    <td>Miljöh</td>
+                    <td>Kiez</td>
+                    <td>Bierdampf</td>
+                </tr>
+                <tr>
+                    <td>Buletten</td>
+                    <td>Frikadellen</td>
+                    <td>Fleischpflanzerl</td>
+                </tr>
+            </table>
+            <ul>
+                <% teams.forEach(function(team) { %>
+                    <li><%= team.on_site %> - <%= team.drunkness %></li>
+                <% }); %>
+            </ul>
         </div>
     </div>
 </main>

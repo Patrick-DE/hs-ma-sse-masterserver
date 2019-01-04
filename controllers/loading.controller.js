@@ -1,3 +1,8 @@
+var Verify = require('../verifyToken');
+var User = require('../models/user.model');
+var Team = require('../models/team.model');
+var Challenge = require('../models/challenge.model');
+
 exports.index = function(req, res, next){
     res.render('pages/index');
 };
@@ -7,7 +12,9 @@ exports.organizer = function(req, res, next){
 };
 
 exports.login = function(req, res, next){
-    res.render('pages/login');
+    Verify.LoginRedirect(req, res, function(){
+        res.redirect('/scoreboard');
+    });
 };
 
 exports.scoreboard = function(req, res, next){
@@ -19,7 +26,7 @@ exports.scoreboard = function(req, res, next){
     var tagline = "Any code of your own that you haven't looked at for six or more months might as well have been written by someone else.";
 
     res.render('pages/scoreboard', {
-        drinks: drinks,
+        teams: retTeams,
         tagline: tagline
     });
 };

@@ -2,30 +2,29 @@ $('.message a').click(function(){
     $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
  });
 
-
-$('#login').click(function(){
-    $.post('api/login', $('#loginForm').serialize()).then(function(data){
-        console.log(data);
-        if (data.auth === true) {
-            setCookie("token", data.token, 1);
-            window.location.replace("/scoreboard");
-        }
+$('#login').click(function(e){
+    e.preventDefault();
+    $.post('api/login', $('#loginForm').serialize(), function(data){
+        //success
+    }).fail(function(msg){
+        $("#errDisplay").show();
+        if(msg.responseJSON != undefined)
+            $("#errmsg").text(msg.responseJSON.err);
+        else
+            $("#errmsg").text(msg.statusText);
     });
 });
 
-$('#register').click(function(){
+$('#register').click(function(e){
+    e.preventDefault();
     $.post('api/register', $('#registerForm').serialize()).then(function(data){
-        console.log(data);
-        if (data.auth === true) {
-            setCookie("token", data.token, 1);
-            window.location.replace("/scoreboard");
-        }
+        $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
+        $("#successDisplay").show();
+    }).fail(function(msg){
+        $("#errDisplay").show();
+        if(msg.responseJSON != undefined)
+            $("#errmsg").text(msg.responseJSON.err);
+        else
+            $("#errmsg").text(msg.statusText);
     });
 });
-
-function setCookie(cname, cvalue, exhour) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exhour*60*60*1000));
-    var expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-  }

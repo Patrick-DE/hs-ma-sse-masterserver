@@ -6,9 +6,10 @@ const bodyParser = require('body-parser');
 
 // create the app
 const app = express();
+app.disable('view cache');
 
 // set the view engine to ejs
-app.set('view engine', 'ejs');
+//app.set('view engine', 'ejs');
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse requests of content-type - application/json
@@ -34,12 +35,14 @@ var loading = require('./controllers/loading.controller');
 var Verify = require('./verifyToken');
 
 // index page
+/*
 app.get('/', loading.index);
 app.get('/organizer', loading.organizer);
 app.get('/login', loading.login);
 app.get('/scoreboard', Verify.Token, loading.scoreboard);
 app.get('/team', Verify.Token, loading.team);
 app.get('/profile', Verify.Token, loading.profile);
+*/
 
 app.use(express.static(path.join(__dirname, 'public')));
 

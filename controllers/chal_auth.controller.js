@@ -10,27 +10,25 @@ var bcrypt = require('bcryptjs');
 exports.user_login = function (req, res) {
 	//USED FOR CHALLENGE
 	User.findOne({ alias: req.body.alias }).select("+password +admin +blocked").exec(function (err, user) {
-		if (err) return res.status(500).send('Error on the server.');
-		if (!user) return res.status(404).send('No matching user found.');
-		if (user.blocked) return res.status(403).send('You have been blocked for violating the rules!');
+		if (err) return res.status(500).send({ err: 'Error on the server.'});
+		if (!user) return res.status(400).send({ err: 'No matching user found.'});
+		if (user.blocked) return res.status(403).send({ err: 'You have been blocked for violating the rules!'});
 		
 		// check if the password is valid
 		var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
-		if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
+		if (!passwordIsValid) return res.status(400).send({ err: "No matching user found." });
 
 		// if user is found and password is valid
 		var token = create_token(user, req.ip);
 
 		// return the information including token as JSON
-		//res.set('location', '/scoreboard');
-		//res.status(301).send({ auth: true, token: token })
-		res.status(200).send({ auth: true, token: token });
+		res.append("set-cookie", setCookie("token", token, 1)).redirect("/scoreboard.html");
 	});
 };
 
 
 exports.user_logout = function (req, res) {
-	res.status(200).send({ auth: false, token: null });
+	res.append("set-cookie", setCookie("token", null, 1)).redirect("/login");
 };
 
 
@@ -38,9 +36,9 @@ exports.user_register = function (req, res) {
 	//USED FOR CHALLENGE - register and login
 	UserController.user_create(req, function(err, user){
 		if (err && err.code === 11000){
-			return res.status(400).send("User already exists.");
+			return res.status(400).send({ err: "User already exists." });
 		}else if(err){
-			return res.status(500).send("There was a problem registering the user.");
+			return res.status(500).send({ err: "There was a problem registering the user." });
 		}
 		// if user is registered without errors create a token
 		var token = create_token(user, req.ip);
@@ -58,3 +56,10 @@ function create_token(user, ip){
 
 	return token;
 };
+
+function setCookie(cname, cvalue, exhour) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exhour*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+	return cname + "=" + cvalue + ";" + expires + ";path=/";
+}

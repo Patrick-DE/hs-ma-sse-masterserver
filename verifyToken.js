@@ -3,17 +3,17 @@ var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 exports.Token = function (req, res, next) {
 	// check header or url parameters or post parameters for token
-	var token = req.headers['x-access-token'];
-	if (!token){
-		res.set('location', '/login');
-   		return res.status(301).send({ auth: false, message: 'No token provided.' });
+	var tokenHeader = req.headers.cookie;
+	if (!tokenHeader){
+   		return res.send({ auth: false, message: 'No token provided.' }).redirect('/login');
 	}
+	token = tokenHeader.split('=')[1];
 
 	// verifies secret and checks exp
 	jwt.verify(token, process.env.SECRET, function (err, decoded) {
 		if (err){
-			res.set('location', '/login');
-   			return res.status(301).send({ auth: false, token: null, message: 'The token expired.' });
+			   return res.status(301).send({ auth: false, token: null, message: 'The token expired.' });
+			   res.append("set-cookie", setCookie("token", null, 1)).redirect("/login");
 		}
 
 		// check if token has client ip
@@ -41,9 +41,12 @@ exports.Token = function (req, res, next) {
 
 exports.AdminToken = function (req, res, next) {
 	// check header or url parameters or post parameters for token
-	var token = req.headers['x-access-token'];
-	if (!token)
-		return res.status(403).send({ auth: false, message: 'No token provided.' });
+	var tokenHeader = req.headers.cookie;
+	if (!tokenHeader){
+		res.set('location', '/login');
+   		return res.status(301).send({ auth: false, message: 'No token provided.' });
+	}
+	token = tokenHeader.split('=')[1];
 
 	// verifies secret and checks exp
 	jwt.verify(token, process.env.SECRET, function (err, decoded) {
@@ -63,3 +66,37 @@ exports.AdminToken = function (req, res, next) {
 		});
 	});
 };
+
+exports.LoginRedirect = function (req, res, next){
+	// check header or url parameters or post parameters for token
+	var tokenHeader = req.headers.cookie;
+	if (!tokenHeader){
+   		return res.render('pages/login');
+	}
+	token = tokenHeader.split('=')[1];
+
+	// verifies secret and checks exp
+	jwt.verify(token, process.env.SECRET, function (err, decoded) {
+		if (err){
+   			return res.render('pages/login');
+		}
+
+		// check if token has client ip
+		if (decoded.ip === undefined || req.ip !== decoded.ip){
+			return res.render('pages/login');
+		}
+
+		// if everything is good, save to request for use in other routes
+		req.userId = decoded.id;
+		
+		User.findById(req.userId).select("+blocked").exec(function (err, user) {
+			if (err){
+				return res.render('pages/login');
+			}			
+			if (user.blocked){
+				return res.render('pages/login');
+			}	
+			next();
+		});
+	});
+}
