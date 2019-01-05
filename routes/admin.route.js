@@ -25,6 +25,9 @@ router.delete('/user/:id', Verify.AdminToken, admin_controller.user_delete);
 // team controlls
 //============================================================
 
+// Get user status
+router.get('/team/', Verify.AdminToken, admin_controller.team_list);
+
 // Update a team
 router.put('/team/:id', Verify.AdminToken, admin_controller.team_update);
 

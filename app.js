@@ -8,8 +8,6 @@ const bodyParser = require('body-parser');
 const app = express();
 app.disable('view cache');
 
-// set the view engine to ejs
-//app.set('view engine', 'ejs');
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse requests of content-type - application/json
@@ -29,20 +27,6 @@ app.use('/api/admin', admin);
 
 var auth = require('./routes/chal_auth.route');
 app.use('/api/', auth); //webroot
-
-// serve website
-var loading = require('./controllers/loading.controller');
-var Verify = require('./verifyToken');
-
-// index page
-/*
-app.get('/', loading.index);
-app.get('/organizer', loading.organizer);
-app.get('/login', loading.login);
-app.get('/scoreboard', Verify.Token, loading.scoreboard);
-app.get('/team', Verify.Token, loading.team);
-app.get('/profile', Verify.Token, loading.profile);
-*/
 
 app.use(express.static(path.join(__dirname, 'public')));
 

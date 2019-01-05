@@ -2,6 +2,9 @@ var User = require('../models/user.model');
 var Team = require('../models/team.model');
 var bcrypt = require('bcryptjs');
 
+//for user_detail team_id
+var TeamController = require('./team.controller');
+
 //NOT EXPOSED, called from auth.controller
 // Handle user create. 
 exports.user_create = function(req, callback) {
@@ -20,15 +23,18 @@ exports.user_create = function(req, callback) {
 // Display detail page for a specific user.
 exports.user_detail = function(req, res, next) {
     User.findById(req.userId).select("+surename").exec(function (err, user) {
-        if (err) return res.status(500).send(err.message);
-        res.json(user);
+        if (err) return res.status(500).send({ err: err.message });
+        TeamController.getTeamId(req.userId, function(err, team_id){
+            if (err) return res.status(500).send({ err: err.message });
+            res.send({user: user, team_id: team_id});
+        });
     });
 };
 
 // Handle user delete on DELETE. 
 exports.user_delete = function(req, res, next) {
     User.findByIdAndDelete(req.userId, function(err, user){
-        if (err) return res.status(500).send(err.message);
+        if (err) return res.status(500).send({ err: err.message });
         res.send(user);
     });
 };
@@ -41,7 +47,7 @@ exports.user_update = function(req, res, next) {
     if (req.body.team !== undefined) delete req.body.team;
 
     User.findByIdAndUpdate(req.userId, req.body, {new: true}, function(err, user){
-        if (err) return res.status(500).send(err.message);
+        if (err) return res.status(500).send({ err: err.message });
         res.send(user);
     });
 };
@@ -49,14 +55,14 @@ exports.user_update = function(req, res, next) {
 // Handle user update on DELETE.
 exports.user_team_delete = function(req, res, next) {
     User.findByIdAndUpdate(req.userId, { team: undefined }, function(err, user){
-        if (err) return res.status(500).send(err.message);
+        if (err) return res.status(500).send({ err: err.message });
 
         Team.findByIdAndUpdate(user.team, {
             $pull: { 
                 members: req.userId
             }
         }, {new: true}).exec(function(err, team){
-            if (err) return res.status(500).send(err.message);
+            if (err) return res.status(500).send({ err: err.message });
             res.send(team);
         });
     });

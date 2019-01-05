@@ -151,3 +151,8 @@ img.resize {
     width: auto; /* you can use % */
     height: 100px;
 }
+
+/* TEAM */
+.form-team{
+  background: rgba(255, 255, 255, 0);
+}

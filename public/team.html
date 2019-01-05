@@ -35,32 +35,25 @@
         </div>
     </header>
     
-    <main>
-        <div class="login-page">
-            <div id="successDisplay" class="alert alert-success alert-dismissible" role="alert" style="display:none">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <div>You have registered your account successfully.</div>
-            </div>
-            <div class="form">
-                <form class="register-form" id="registerForm">
-                    <input type="text" autocomplete="off" name="name" placeholder="name" required />
-                    <input type="text" autocomplete="off" name="surename" placeholder="surename" />
-                    <input type="text" autocomplete="off" name="alias" placeholder="alias (will be displayed)" required />
-                    <input type="password" autocomplete="off" name="password" placeholder="password" required />
-                    <button id="register">create</button>
-                    <p class="message">Already registered? <a href="#">Sign In</a></p>
-                </form>
-                <form class="login-form" id="loginForm">
-                    <input type="text" autocomplete="off" name="alias" placeholder="alias" required />
-                    <input type="password" autocomplete="off" name="password" placeholder="password" required />
-                    <button id="login">login</button>
-                    <p class="message">Not registered? <a href="#">Create an account</a></p>
-                </form>
-            </div>
+    <main class="container">
+        <h2 id="feed" style="text-align: center;"></h2>
+        <div id="info" style="text-align: center;"></div>
+        <div class="form" id="createTeamFormDiv" style="display:none;">
+            <form class="login-form" id="createTeamForm">
+                <input type="text" autocomplete="off" name="name" placeholder="Teamname" required />
+                <input type="text" autocomplete="off" name="country" placeholder="Country" required />
+                <button id="createTeam">Create Team</button>
+            </form>
+        </div>
+        <div class="form form-team" id="editTeamFormDiv" style="display:none;">
+            <form class="login-form" id="editTeamForm">
+                <button id="editTeam">Update Team</button>
+            </form>
         </div>
     </main>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="js/login.js"></script>
+    <script src="js/team.js"></script>
     
     <footer>
         <p class="text-center text-muted">© Copyright 2019 Sh4d0w</p>

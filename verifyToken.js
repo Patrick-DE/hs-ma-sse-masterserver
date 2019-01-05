@@ -1,39 +1,34 @@
 var User = require('./models/user.model');
+var Auth = require('./controllers/chal_auth.controller');
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 exports.Token = function (req, res, next) {
 	// check header or url parameters or post parameters for token
 	var tokenHeader = req.headers.cookie;
-	if (!tokenHeader){
-   		return res.send({ auth: false, message: 'No token provided.' }).redirect('/login');
+	token = "null";
+	try{
+		token = tokenHeader.split('=')[1];
+	}catch(e){};
+	if (!tokenHeader || token === "null"){
+		return res.status(403).send({ err: 'No token available, please login.'});
 	}
-	token = tokenHeader.split('=')[1];
 
 	// verifies secret and checks exp
 	jwt.verify(token, process.env.SECRET, function (err, decoded) {
 		if (err){
-			   return res.status(301).send({ auth: false, token: null, message: 'The token expired.' });
-			   res.append("set-cookie", setCookie("token", null, 1)).redirect("/login");
+			return res.status(400).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'The token expired.'});
 		}
 
 		// check if token has client ip
-		if (decoded.ip === undefined || req.ip !== decoded.ip){
-			res.set('location', '/login');
-			return res.status(301).send({ auth: false, token: null, message: 'Failed to authenticate token.' });
-		}
+		if (decoded.ip === undefined || req.ip !== decoded.ip) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.'});
 
 		// if everything is good, save to request for use in other routes
 		req.userId = decoded.id;
 
 		User.findById(req.userId).select("+blocked").exec(function (err, user) {
-			if (err){
-				res.set('location', '/login');
-				return res.status(301).send({ auth: false, token: null, message: 'Failed to authenticate the user status.' });
-			}			
-			if (user.blocked){
-				res.set('location', '/');
-				return res.status(403).send({ auth: false, token: null, message: 'You have been blocked for violating the rules.' });
-			}	
+			if (err) 			return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate the user status.'});
+			if (!user) 			return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'The user requested was deleted.'});
+			if (user.blocked)	return res.status(403).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'You have been blocked for violating the rules.'});
 			next();
 		});
 	});
@@ -42,61 +37,29 @@ exports.Token = function (req, res, next) {
 exports.AdminToken = function (req, res, next) {
 	// check header or url parameters or post parameters for token
 	var tokenHeader = req.headers.cookie;
-	if (!tokenHeader){
-		res.set('location', '/login');
-   		return res.status(301).send({ auth: false, message: 'No token provided.' });
+	token = "null";
+	try{
+		token = tokenHeader.split('=')[1];
+	}catch(e){};
+	if (!tokenHeader || token === "null"){
+		return res.status(403).send({ err: 'No token available, please login.'});
 	}
-	token = tokenHeader.split('=')[1];
 
 	// verifies secret and checks exp
 	jwt.verify(token, process.env.SECRET, function (err, decoded) {
-		if (err) return res.status(500).send({ auth: false, token: null, message: 'Failed to authenticate token.' });
+		if (err) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.'});
 
 		// check if token has client ip
-		if (decoded.ip === undefined || req.ip !== decoded.ip) return res.status(500).send({ auth: false, token: null, message: 'Failed to authenticate token.' });
-		if (decoded.admin === undefined || req.admin === false) return res.status(403).send({ auth: false, token: null, message: 'Forbidden.' });
+		if (decoded.ip === undefined || req.ip !== decoded.ip) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.' });
+		if (decoded.admin === undefined || req.admin === false) return res.status(403).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Forbidden.' });
 
 		// if everything is good, save to request for use in other routes
 		req.userId = decoded.id;
 		
 		User.findById(req.userId).select("+blocked").exec(function (err, user) {
-			if (err)			return res.status(500).send({ auth: false, token: null, message: 'Failed to authenticate the user status.' });
-			if (user.blocked)	return res.status(403).send({ auth: false, token: null, message: 'You have been blocked for violating the rules.' });
+			if (err) 			return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate the user status.'});
+			if (user.blocked)	return res.status(403).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'You have been blocked for violating the rules.'});
 			next();
 		});
 	});
 };
-
-exports.LoginRedirect = function (req, res, next){
-	// check header or url parameters or post parameters for token
-	var tokenHeader = req.headers.cookie;
-	if (!tokenHeader){
-   		return res.render('pages/login');
-	}
-	token = tokenHeader.split('=')[1];
-
-	// verifies secret and checks exp
-	jwt.verify(token, process.env.SECRET, function (err, decoded) {
-		if (err){
-   			return res.render('pages/login');
-		}
-
-		// check if token has client ip
-		if (decoded.ip === undefined || req.ip !== decoded.ip){
-			return res.render('pages/login');
-		}
-
-		// if everything is good, save to request for use in other routes
-		req.userId = decoded.id;
-		
-		User.findById(req.userId).select("+blocked").exec(function (err, user) {
-			if (err){
-				return res.render('pages/login');
-			}			
-			if (user.blocked){
-				return res.render('pages/login');
-			}	
-			next();
-		});
-	});
-}

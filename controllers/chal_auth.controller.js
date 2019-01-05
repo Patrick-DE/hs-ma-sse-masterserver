@@ -22,13 +22,13 @@ exports.user_login = function (req, res) {
 		var token = create_token(user, req.ip);
 
 		// return the information including token as JSON
-		res.append("set-cookie", setCookie("token", token, 1)).redirect("/scoreboard.html");
+		res.append("set-cookie", exports.setCookie("token", token, 1)).redirect("/scoreboard.html");
 	});
 };
 
 
 exports.user_logout = function (req, res) {
-	res.append("set-cookie", setCookie("token", null, 1)).redirect("/login");
+	res.append("set-cookie", exports.setCookie("token", null, 1)).redirect("/login.html");
 };
 
 
@@ -43,7 +43,7 @@ exports.user_register = function (req, res) {
 		// if user is registered without errors create a token
 		var token = create_token(user, req.ip);
 
-		res.status(200).send({ auth: true, token: token });
+		res.status(201).send();
 	});
 };
 
@@ -57,7 +57,7 @@ function create_token(user, ip){
 	return token;
 };
 
-function setCookie(cname, cvalue, exhour) {
+exports.setCookie = function(cname, cvalue, exhour) {
     var d = new Date();
     d.setTime(d.getTime() + (exhour*60*60*1000));
     var expires = "expires="+ d.toUTCString();
