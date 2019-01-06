@@ -26,7 +26,7 @@ router.delete('/user/:id', Verify.AdminToken, admin_controller.user_delete);
 //============================================================
 
 // Get user status
-router.get('/team/', Verify.AdminToken, admin_controller.team_list);
+router.get('/team', Verify.AdminToken, admin_controller.team_list);
 
 // Update a team
 router.put('/team/:id', Verify.AdminToken, admin_controller.team_update);
@@ -38,12 +38,15 @@ router.delete('/team/:id', Verify.AdminToken, admin_controller.team_delete);
 //============================================================
 
 //submit new challenge
-router.post('challenge/', Verify.AdminToken, admin_controller.challenge_create);
+router.post('/challenge', Verify.AdminToken, admin_controller.challenge_create);
 
 //Update a challenge
-router.put('challenge/:id', Verify.AdminToken, admin_controller.challenge_update);
+router.put('/challenge/:id', Verify.AdminToken, admin_controller.challenge_update);
+
+//Update a challenge
+router.get('/challenge/activate', Verify.AdminToken, admin_controller.challenge_activate);
 
 //Delete a challenge
-router.delete('challenge/:id', Verify.AdminToken, admin_controller.challenge_delete);
+router.delete('/challenge/:id', Verify.AdminToken, admin_controller.challenge_delete);
 
 module.exports = router;

@@ -19,9 +19,10 @@ exports.Token = function (req, res, next) {
 			return res.status(400).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'The token expired.'});
 		}
 
+		// check if token has user_id
+		if (decoded.id === undefined) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.'});
 		// check if token has client ip
 		if (decoded.ip === undefined || req.ip !== decoded.ip) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.'});
-
 		// if everything is good, save to request for use in other routes
 		req.userId = decoded.id;
 
@@ -49,6 +50,8 @@ exports.AdminToken = function (req, res, next) {
 	jwt.verify(token, process.env.SECRET, function (err, decoded) {
 		if (err) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.'});
 
+		// check if token has user_id
+		if (decoded.id === undefined) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.'});
 		// check if token has client ip
 		if (decoded.ip === undefined || req.ip !== decoded.ip) return res.status(500).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Failed to authenticate token.' });
 		if (decoded.admin === undefined || req.admin === false) return res.status(403).append("set-cookie", Auth.setCookie("token", null, 1)).send({ err: 'Forbidden.' });

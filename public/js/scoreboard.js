@@ -6,7 +6,7 @@ function getTeams() {
 			delete data[k]._id;
 			if(data[k].on_site == true) data[k].on_site = "X";
 		}
-		var table = $('<table border=1>')[0];
+		var table = $('<table style="margin: 0 auto;" border=1>')[0];
 		var tblHeader = "<tr>";
 		for (var k in header) tblHeader += "<th>" + header[k].toUpperCase().replace('_', ' ') + "</th>";
 		tblHeader += "</tr>";
@@ -27,7 +27,7 @@ function getTeams() {
 			TableRow += "</tr>";
 			$(table).append(TableRow);
 		});
-		$(table).appendTo("main");
+		$(table).prependTo("main");
 	}).fail(function (msg) {
 		$("#errDisplay").show();
 		if (msg.responseJSON != undefined)
@@ -37,4 +37,51 @@ function getTeams() {
 	});
 }
 
+function getChallenges(){
+	$.getJSON('api/challenge', function (data) {
+		var header = ["activated", "name", "description", "points", "solved_by"];
+		var chal = '<div class="container">';
+		chal += '<div class="row">';
+		data.forEach(function(elem, index){
+			header.forEach(function(key, index){
+				if (key === "activated")
+					(elem[key] === true) ? chal += '<h3 style="color: green;">Active</h3><div class="col">' : chal += '<h3 style="color: red;">Not active</h3><div class="col-6 chal-de">';
+				else if(key === "solved_by"){
+					chal += '<p>'+key+': ';
+					elem[key].forEach(function(team, index){
+						chal += team.name+",";
+					})
+					chal = chal.substr(0,chal.length-1) + '</p>';
+				}else
+					chal += '<p>'+key+': '+elem[key]+'</p>';
+			});
+			chal += '</div>';
+		});
+		chal += '</div>';
+		chal += '</div>';
+		$("main").append(chal);
+		$("#submitFlagForm").show();
+	}).fail(function (msg) {
+		$("#errDisplay").show();
+		if (msg.responseJSON != undefined)
+			$("#errmsg").text(msg.responseJSON.err);
+		else
+			$("#errmsg").text(msg.statusText);
+	});
+}
+
+$("#submitFlag").click(function(e){
+	e.preventDefault();
+    $.post('api/team/submit', $('#submitFlagForm').serialize(), function(data, msg){
+        window.location.pathname = '/scoreboard.html';
+    }).fail(function(msg){
+        $("#errDisplay").show();
+        if(msg.responseJSON != undefined)
+            $("#errmsg").text(msg.responseJSON.err);
+        else
+            $("#errmsg").text(msg.statusText);
+    });
+});
+
 getTeams();
+getChallenges();

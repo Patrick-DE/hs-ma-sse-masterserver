@@ -1,5 +1,6 @@
 var User = require('../models/user.model');
 var Team = require('../models/team.model');
+var Challenge = require('../models/challenge.model');
 var bcrypt = require('bcryptjs');
 
 // USER
@@ -95,7 +96,7 @@ exports.challenge_delete = function(req, res, next) {
     Challenge.findByIdAndDelete(req.params.id, function(err, challenge){
         if (err) return res.status(500).send({ err: err.message });
         res.send(challenge);
-    })
+    });
 };
 
 // Handle challenge update on POST.
@@ -103,5 +104,12 @@ exports.challenge_update = function(req, res, next) {
     Challenge.findByIdAndUpdate(req.params.id, req.body, {new: true}, function(err, challenge){
         if (err) return res.status(500).send({ err: err.message });
         res.send(challenge);
-    })
+    });
+};
+
+exports.challenge_activate = function(req, res, next) {
+    Challenge.updateMany({activated: !req.body.status},{activated: req.body.status}).then(result => {
+        if (result.ok !== 1) return res.status(500);
+        res.status(200).send(result.nModified+" challenges were changed");
+    });
 };

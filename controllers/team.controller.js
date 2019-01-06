@@ -6,7 +6,7 @@ var Challenge = require('../models/challenge.model');
 
 // Display list of all teams.
 exports.team_list = function(req, res) {
-    Team.find({}).populate('solved_challenges').exec(function (err, teams) {
+    Team.find({}).populate('solved_challenges').sort({"team_points": -1}).exec(function (err, teams) {
         if (err) return res.status(500).send({ err: err.message });
         res.json(teams);
     });
@@ -18,7 +18,7 @@ exports.team_detail = function(req, res) {
         if (err) return res.status(500).send({ err: err.message });
         if (!team_id) return res.status(404).send({ err: "You are not part of a team. Create one or get invited."});
 
-        Team.findById(team_id).populate('members').exec(function (err, team) {
+        Team.findById(team_id).populate('members').populate('solved_challenges').exec(function (err, team) {
             if (err) return res.status(500).send({ err: err.message });
             res.status(200).send(team);
         });
@@ -28,10 +28,15 @@ exports.team_detail = function(req, res) {
 // Handle team create on POST.
 exports.team_create = function(req, res, next) {
     var newTeam = new Team(req.body);
+    var tmp = exports.checkCityOrCountry(newTeam.country);
+    if(tmp === "")
+        return res.status(400).send({err: "Please enter a valid country (en). The full list can be found here: /resources/countries.json"});
+    else
+        newTeam.country = tmp;
     newTeam.members[0] = req.userId;
     newTeam.save(function(err, team) {
         if (err && err.code == 11000){
-            return res.status(500).send("The team does already exist.");
+            return res.status(500).send({ err: "The team does already exist."});
         }else if(err){
             return res.status(500).send({ err: err.message });
         }
@@ -43,7 +48,7 @@ exports.team_create = function(req, res, next) {
 exports.team_delete = function(req, res, next) {
     exports.getTeamId(req.userId, function(err, team_id){
         if (err) return res.status(500).send({ err: err.message });
-        if (!team_id) return res.status(500).send("No team found.");
+        if (!team_id) return res.status(500).send({ err: "No team found."});
 
         Team.findByIdAndDelete(team_id, function(err, team){
             if (err) return res.status(500).send({ err: err.message });
@@ -56,6 +61,12 @@ exports.team_delete = function(req, res, next) {
 exports.team_update = function(req, res, next) {
     if(req.body.name === undefined || req.body.country === undefined) return res.status(400).send({err: "Please enter the required data."});
     if(req.body.name.trim() === "" || req.body.country.trim() === "") return res.status(400).send({err: "Please enter the required data."});
+    var tmp = exports.checkCityOrCountry(req.body.country);
+    if(tmp === "")
+        return res.status(400).send({err: "Please enter a valid country (en). The full list can be found here: /resources/countries.json"});
+    else
+        req.body.country = tmp;
+
     //update only name & country
     exports.getTeamId(req.userId, function(err, team_id){
         if (err) return res.status(500).send({ err: err.message });
@@ -71,17 +82,19 @@ exports.team_update = function(req, res, next) {
 // Handle team update on POST.
 exports.team_add_member = function(req, res, next) {
     exports.getTeamId(req.userId, function(err, team_id){
-        if (err) return res.status(500).send({submit: false, message: "Error while processing your team. Please report back!"});
-        if (!team_id) return res.status(400).send({submit: false, message: "Please join a team."});
+        if (err) return res.status(500).send({ err: "Error while processing your team. Please report back!"});
+        if (!team_id) return res.status(400).send({ err: "Please join a team."});
 
-        Team.findByIdAndUpdate(team_id, {
-            $addToSet: { 
-                members: user._id
-            }
-        }, {new: true}).exec(function(err, team){
-            if (err) return res.status(500).send({ err: err.message });
-            res.status(201).send(team);
-        });
+        User.findOne({ alias: req.body.alias}, function(err, user){
+            Team.findByIdAndUpdate(team_id, {
+                $addToSet: { 
+                    members: user._id
+                }
+            }, {new: true}).exec(function(err, team){
+                if (err) return res.status(500).send({ err: err.message });
+                res.status(201).send(team);
+            });
+        })
     });
 };
 
@@ -89,16 +102,20 @@ exports.team_add_member = function(req, res, next) {
 // Handle team update on POST.
 exports.team_delete_member = function(req, res, next) {
     exports.getTeamId(req.userId, function(err, team_id){
-        if (err) return res.status(500).send({submit: false, message: "Error while processing your team. Please report back!"});
-        if (!team_id) return res.status(400).send({submit: false, message: "Please join a team."});
+        if (err) return res.status(500).send({ err: "Error while processing your team. Please report back!"});
+        if (!team_id) return res.status(400).send({ err: "Please join a team."});
 
-        Team.findByIdAndUpdate(team_id, {
-            $pull: { 
-                members: req.params.id
-            }
-        }, {new: true}).exec(function(err, team){
+        User.findOne({alias: req.body.alias}, function(err, user){
             if (err) return res.status(500).send({ err: err.message });
-            res.status(200).send(team);
+
+            Team.findByIdAndUpdate(team_id, {
+                $pull: { 
+                    members: user.id
+                }
+            }, {new: true}).exec(function(err, team){
+                if (err) return res.status(500).send({ err: err.message });
+                res.status(200).send(team);
+            });
         });
     });
 };
@@ -106,32 +123,41 @@ exports.team_delete_member = function(req, res, next) {
 // Submit flag via POST.
 exports.team_submit_flag = function(req, res, next) {
     // check if flag exists
-    Challenge.findOne( {flag: req.body.flag }, function(err, challenge){
-        if (err) return res.status(500).send({submit: false, message: "Error while processing the challenge. Please report back!"});
+    Challenge.findOne( {flag: req.body.flag, activated: true }, function(err, challenge){
+        if (err) return res.status(500).send({ err: "Error while processing the challenge. Please report back!"});
         if (!challenge){
-            return res.status(400).send({submit: false, message: "You submitted an invalid flag!"});
+            return res.status(400).send({ err: "You submitted an invalid flag!"});
         }else{
+            /*var count = challenge.solved_by.length;
+            var bonusDec = 0;
+            if(count === 0)
+                bonusDec = 50;
+            else if(count === 1)
+                bonusDec  = 25;
+            else if(count === 2)
+                bonusDec = 10;*/
+
             // what is the users team
             exports.getTeamId(req.userId, function(err, team_id){
-                if (err) return res.status(500).send({submit: false, message: "Error while processing your team. Please report back!"});
-                if (!team_id) return res.status(400).send({submit: false, message: "Please join a team."});
+                if (err) return res.status(500).send({ err: "Error while processing your team. Please report back!"});
+                if (!team_id) return res.status(400).send({ err: "Please join a team."});
                 // if user has a team update challenge
                 Challenge.findByIdAndUpdate(challenge._id, {
                     $addToSet: { 
                         solved_by: team_id
                     }
                 }).exec(function(err, challenge){
-                    if (err || !challenge) return res.status(500).send({submit: false, message: "Error while registering points. Please report back!"});
+                    if (err || !challenge) return res.status(500).send({ err: "Error while registering points. Please report back!"});
                     // if challenge was updated update team
                     Team.findByIdAndUpdate(team_id,{
                         $addToSet: { 
                             solved_challenges: challenge._id
                         },
                         $inc: {
-                            team_points: challenge.points
+                            team_points: challenge.points-(challenge.solved_by.length*5)//+bonusDec
                         }
                     },{new: true}).exec(function(err, team){
-                        if (err || !team) return res.status(500).send({submit: false, message: "Error while saving the flag. Please report back!"});
+                        if (err || !team) return res.status(500).send({ err: "Error while saving the flag. Please report back!"});
                         
                         return res.status(201).send({submit: true, team: team});
                     });
@@ -174,4 +200,22 @@ exports.getTeamId = function (userId, callback){
         }
         callback(err, team_id);
     });
+}
+
+exports.checkCityOrCountry = function(name){
+    const fs = require('fs');
+    pfad = "../public/resources/countries.json";
+    try{
+        fs.existsSync(pfad);
+    }catch(e){
+        console.log("/resources/countries.json is missing!" + " - " + e.message);
+    }
+    const countries = require(pfad);
+    var found = "";
+    countries.forEach((country) => {
+        if (country.name.toLowerCase() === name.toLowerCase() || country.code.toLowerCase() === name.toLowerCase()) {
+            found = country.name;
+        };
+    });
+    return found;
 }

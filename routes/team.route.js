@@ -26,6 +26,6 @@ router.post('/submit', Verify.Token, team_controller.team_submit_flag);
 router.post('/member', Verify.Token, team_controller.team_add_member);
 
 //remove member
-router.delete('/member/:id', Verify.Token, team_controller.team_delete_member);
+router.delete('/member/', Verify.Token, team_controller.team_delete_member);
 
 module.exports = router;

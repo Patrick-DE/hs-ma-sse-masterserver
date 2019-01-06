@@ -37,18 +37,38 @@
     
     <main class="container">
         <h2 id="feed" style="text-align: center;"></h2>
-        <div id="info" style="text-align: center;"></div>
+        <div id="info" style="text-align: center;">
+            <h3>Teaminformation</h3>
+        </div>
         <div class="form" id="createTeamFormDiv" style="display:none;">
             <form class="login-form" id="createTeamForm">
                 <input type="text" autocomplete="off" name="name" placeholder="Teamname" required />
-                <input type="text" autocomplete="off" name="country" placeholder="Country" required />
+                <input type="text" autocomplete="off" name="country" placeholder="Country (or country code)" required />
                 <button id="createTeam">Create Team</button>
             </form>
         </div>
-        <div class="form form-team" id="editTeamFormDiv" style="display:none;">
-            <form class="login-form" id="editTeamForm">
-                <button id="editTeam">Update Team</button>
-            </form>
+        <div id="teamExistsDiv" style="display:none;">
+            <div class="form form-team">
+                <form class="login-form" id="editTeamForm">
+                    <button id="editTeam">Update Team</button>
+                </form>
+            </div>
+            <div class="form form-team">
+                <h3>Teammanagement</h3>
+                <form class="login-form" id="addMemberForm">
+                    <label for="alias">Add Member</label>
+                    <input type="text" autocomplete="off" name="alias" placeholder="alias" required />
+                    <button id="addMember">Add member</button>
+                </form>
+                </br>
+                <form class="login-form" id="deleteMemberForm">
+                        <label for="alias">Remove Member</label>
+                    <input type="text" autocomplete="off" name="alias" placeholder="alias" required />
+                    <button id="deleteMember">Remove member</button>
+                </form>
+            </div>
+            <button class="btn btn-danger" id="deleteTeam" style="margin:auto;display:block;">Delete my team!</button>
+            </br>
         </div>
     </main>
 

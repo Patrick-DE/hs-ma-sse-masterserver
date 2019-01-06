@@ -1,10 +1,10 @@
 var Challenge = require('../models/challenge.model');
 
-// Display list of all buddies.
+// Display list of all challenges.
 exports.challenge_list = function(req, res, next) {
-    Challenge.find(function (err, buddies) {
+    Challenge.find({}).populate('solved_by').exec(function (err, challenges) {
         if (err) return res.status(500).send({ err: err.message });
-        res.json(buddies);
+        res.json(challenges);
     })
 };
 

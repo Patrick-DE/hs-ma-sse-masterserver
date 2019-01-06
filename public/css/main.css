@@ -155,4 +155,21 @@ img.resize {
 /* TEAM */
 .form-team{
   background: rgba(255, 255, 255, 0);
+  margin: 0 auto 50px;
+}
+
+.form-team label{
+  float: left;
+}
+
+/* SCOREBOARD */
+td, th{
+  padding: 10px;
+}
+
+.form-scoreboard{
+  background: rgba(255, 255, 255, 0);
+  margin: 50px auto 50px;
+  padding: 0;
+  max-width: 500px;
 }
