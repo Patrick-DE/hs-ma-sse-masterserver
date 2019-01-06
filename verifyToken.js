@@ -5,13 +5,17 @@ var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 exports.Token = function (req, res, next) {
 	// check header or url parameters or post parameters for token
 	var tokenHeader = req.headers.cookie;
-	token = "null";
-	try{
-		token = tokenHeader.split('=')[1];
-	}catch(e){};
-	if (!tokenHeader || token === "null"){
-		return res.status(403).send({ err: 'No token available, please login.'});
-	}
+	if (!tokenHeader) return res.status(403).send({ err: 'No token available, please login.'});
+	var cookies = tokenHeader.split(';');
+
+	var token = "null";
+	cookies.forEach(function(elem, index){
+		var tokens = elem.split('=');
+		if(tokens[0].trim() === "token"){
+			if(tokens[1].trim() !== undefined && tokens[1].trim() !== "null") token = tokens[1];
+		}
+	});
+	if (token === "null") return res.status(403).send({ err: 'No token available, please login.'});
 
 	// verifies secret and checks exp
 	jwt.verify(token, process.env.SECRET, function (err, decoded) {
@@ -38,13 +42,17 @@ exports.Token = function (req, res, next) {
 exports.AdminToken = function (req, res, next) {
 	// check header or url parameters or post parameters for token
 	var tokenHeader = req.headers.cookie;
-	token = "null";
-	try{
-		token = tokenHeader.split('=')[1];
-	}catch(e){};
-	if (!tokenHeader || token === "null"){
-		return res.status(403).send({ err: 'No token available, please login.'});
-	}
+	if (!tokenHeader) return res.status(403).send({ err: 'No token available, please login.'});
+	var cookies = tokenHeader.split(';');
+
+	var token = "null";
+	cookies.forEach(function(elem, index){
+		var tokens = elem.split('=');
+		if(tokens[0].trim() === "token"){
+			if(tokens[1].trim() !== undefined && tokens[1].trim() !== "null") token = tokens[1];
+		}
+	});
+	if (token === "null") return res.status(403).send({ err: 'No token available, please login.'});
 
 	// verifies secret and checks exp
 	jwt.verify(token, process.env.SECRET, function (err, decoded) {

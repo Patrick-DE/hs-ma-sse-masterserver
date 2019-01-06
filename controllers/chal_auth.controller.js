@@ -28,7 +28,7 @@ exports.user_login = function (req, res) {
 
 
 exports.user_logout = function (req, res) {
-	res.append("set-cookie", exports.setCookie("token", null, Number(process.env.TOKEN_EXPIRE))).redirect("/login.html");
+	res.append("set-cookie", exports.setCookie("token", null, 1)).redirect("/login.html");
 };
 
 
