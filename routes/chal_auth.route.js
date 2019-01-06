@@ -13,4 +13,7 @@ router.get('/logout', auth_controller.user_logout);
 //Set valid token if successfull (CHALLENGE)
 router.post('/login', auth_controller.user_login);
 
+//CTF-Time ScoreboardFeed
+router.get('/scoreboard', auth_controller.scoreboard);
+
 module.exports = router;

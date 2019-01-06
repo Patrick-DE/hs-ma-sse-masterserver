@@ -33,7 +33,7 @@ exports.team_create = function(req, res, next) {
         return res.status(400).send({err: "Please enter a valid country (en). The full list can be found here: /resources/countries.json"});
     else
         newTeam.country = tmp;
-    newTeam.members[0] = req.userId;
+    newTeam.members[0] = mongoose.Types.ObjectId(req.userId);
     newTeam.save(function(err, team) {
         if (err && err.code == 11000){
             return res.status(500).send({ err: "The team does already exist."});
@@ -87,7 +87,7 @@ exports.team_add_member = function(req, res, next) {
 
         User.findOne({ alias: req.body.alias}, function(err, user){
             exports.getTeamId(user._id, function(err, team_id){
-                if(team_id !== undefined){
+                if(team_id === undefined){
                     Team.findByIdAndUpdate(team_id, {
                         $addToSet: { 
                             members: user._id

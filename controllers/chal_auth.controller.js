@@ -63,3 +63,15 @@ exports.setCookie = function(cname, cvalue, exhour) {
     var expires = "expires="+ d.toUTCString();
 	return cname + "=" + cvalue + ";" + expires + ";path=/";
 }
+
+
+var Team = require('../models/team.model');
+exports.scoreboard = function(req, res, next){
+	var scoreboard = { "standings": []};
+	Team.find({}).sort({"team_points": -1}).exec(function(err, teams){
+		teams.forEach(function(elem, index){
+			scoreboard.standings.push({"pos": index+1, team: elem.name, "score": elem.team_points});
+		});
+		res.status(200).send(scoreboard);
+	});
+}
