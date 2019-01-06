@@ -33,7 +33,7 @@ var tokenHeader = document.cookie;
 var cookies = tokenHeader.split(';');
 cookies.forEach(function(elem, index){
 	var token = elem.split('=');
-	if(token[0] === "token"){
-		if(token[1] !== undefined && token[1] !== "null") window.location.pathname = "/scoreboard.html";
+	if(token[0].trim() === "token"){
+		if(token[1].trim() !== undefined && token[1].trim() !== "null") window.location.pathname = "/scoreboard.html";
 	}
 });
