@@ -30,5 +30,10 @@ $('#register').click(function(e){
 });
 
 var tokenHeader = document.cookie;
-token = tokenHeader.split('=')[1];
-if(token !== undefined && token !== "null") window.location.pathname = "/scoreboard.html";
+var cookies = tokenHeader.split(';');
+cookies.forEach(function(elem, index){
+	var token = elem.split('=');
+	if(token[0] === "token"){
+		if(token[1] !== undefined && token[1] !== "null") window.location.pathname = "/scoreboard.html";
+	}
+});
