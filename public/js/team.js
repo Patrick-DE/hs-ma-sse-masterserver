@@ -5,7 +5,7 @@ $('#editTeam').click(function(e){
         type: 'PUT',
         data: $('#editTeamForm').serialize(),
         success: function(result) {
-            window.location.pathname = '/team.html';
+            getTeam();
         },
         error: function(msg,error) {
             $("#errDisplay").show();
@@ -20,7 +20,7 @@ $('#editTeam').click(function(e){
 $('#addMember').click(function(e){
     e.preventDefault();
     $.post('api/team/member', $('#addMemberForm').serialize(), function(data, msg){
-        window.location.pathname = '/team.html';
+        getTeam();
     }).fail(function(msg){
         $("#errDisplay").show();
         if(msg.responseJSON != undefined)
@@ -37,7 +37,7 @@ $('#deleteMember').click(function(e){
         type: 'DELETE',
         data: $('#deleteMemberForm').serialize(),
         success: function(result) {
-            window.location.pathname = '/team.html';
+            getTeam();
         },
         error: function(msg,error) {
             $("#errDisplay").show();
@@ -91,24 +91,26 @@ $('#createTeam').click(function(e){
 
 function getTeam(){
     $.getJSON('api/team/', function (team) {
-        delete team.__v;
-        delete team._id;
-        formContent = "";
-        for (var key in team){
-            if(key === "on_site" || key === "team_points"){
-                $("#info").append('<p>'+key+' : '+team[key]+' </p>');
+        $("#content").empty();
+        var header = ["name", "country", "team_points", "on_site", "solved_challenges", "members"];
+        formContent = "<h3>Teaminformation</h3>";
+        content = "";
+        header.forEach(function(key, index){
+            if(key === "name" || key === "country"){
+                formContent += '<label for="'+key+'">'+key.toUpperCase()+' </label>';
+                formContent += '<input type="text" autocomplete="off" placeholder="'+key+'" name="'+key+'" value="'+team[key]+'" required />';
             }else if(key === "solved_challenges" || key === "members"){
-                content = "<p>"+key+':';
+                content += "<p>"+key+':';
                 team[key].forEach(function(obj){
                     (key==="members") ? content += ' '+obj.alias : content += ' '+obj.name;
                 });
-                $("#info").append(content +'</p>');
+                content += '</p>';
             }else{
-                formContent += '<label for="'+key+'">'+key.toUpperCase()+' </label>';
-                formContent += '<input type="text" autocomplete="off" placeholder="'+key+'" name="'+key+'" value="'+team[key]+'" required />';
+                content += '<p>'+key+' : '+team[key]+' </p>';
             }
-        };
-        $("#editTeamForm").prepend(formContent);
+        });
+        $("#content").prepend(content);
+        $("#content").prepend(formContent);
         $("#teamExistsDiv").show();
     }).fail(function(msg){
         if(msg.status === 404){

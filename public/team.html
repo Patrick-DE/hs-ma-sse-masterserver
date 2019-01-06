@@ -37,9 +37,6 @@
     
     <main class="container">
         <h2 id="feed" style="text-align: center;"></h2>
-        <div id="info" style="text-align: center;">
-            <h3>Teaminformation</h3>
-        </div>
         <div class="form" id="createTeamFormDiv" style="display:none;">
             <form class="login-form" id="createTeamForm">
                 <input type="text" autocomplete="off" name="name" placeholder="Teamname" required />
@@ -50,9 +47,11 @@
         <div id="teamExistsDiv" style="display:none;">
             <div class="form form-team">
                 <form class="login-form" id="editTeamForm">
+                    <div id="content"></div>
                     <button id="editTeam">Update Team</button>
                 </form>
             </div>
+            <div id="info" style="text-align: center;"></div>
             <div class="form form-team">
                 <h3>Teammanagement</h3>
                 <form class="login-form" id="addMemberForm">

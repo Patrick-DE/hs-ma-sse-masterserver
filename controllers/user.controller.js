@@ -44,26 +44,9 @@ exports.user_update = function(req, res, next) {
     //remove all contents which should not be modified
     if (req.body.admin !== undefined) delete req.body.admin;
     if (req.body.blocked !== undefined) delete req.body.blocked;
-    if (req.body.team !== undefined) delete req.body.team;
 
     User.findByIdAndUpdate(req.userId, req.body, {new: true}, function(err, user){
         if (err) return res.status(500).send({ err: err.message });
         res.send(user);
-    });
-};
-
-// Handle user update on DELETE.
-exports.user_team_delete = function(req, res, next) {
-    User.findByIdAndUpdate(req.userId, { team: undefined }, function(err, user){
-        if (err) return res.status(500).send({ err: err.message });
-
-        Team.findByIdAndUpdate(user.team, {
-            $pull: { 
-                members: req.userId
-            }
-        }, {new: true}).exec(function(err, team){
-            if (err) return res.status(500).send({ err: err.message });
-            res.send(team);
-        });
     });
 };

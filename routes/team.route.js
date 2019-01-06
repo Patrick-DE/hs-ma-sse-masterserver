@@ -13,10 +13,10 @@ router.get('/', Verify.Token, team_controller.team_detail);
 //submit new team
 router.post('/', Verify.Token, team_controller.team_create);
 
-//Update a team //TODO: check if hes in team
+//Update users team
 router.put('/', Verify.Token, team_controller.team_update);
 
-//Delete a team //TODO: check if hes in team
+//Delete users team
 router.delete('/', Verify.Token, team_controller.team_delete);
 
 //Submit a flag
