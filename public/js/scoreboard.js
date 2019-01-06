@@ -1,5 +1,6 @@
 function getTeams() {
 	$.getJSON('api/team/all', function (data) {
+		$("#scoreboard").empty();
 		var header = ["name", "country", "on_site", "team_points", "solved_challenges"];
 		for (var k in data){
 			delete data[k].__v;
@@ -27,7 +28,7 @@ function getTeams() {
 			TableRow += "</tr>";
 			$(table).append(TableRow);
 		});
-		$(table).prependTo("main");
+		$(table).prependTo("#scoreboard");
 	}).fail(function (msg) {
 		$("#errDisplay").show();
 		if (msg.responseJSON != undefined)
@@ -39,6 +40,7 @@ function getTeams() {
 
 function getChallenges(){
 	$.getJSON('api/challenge', function (data) {
+		$("#challenges").empty();
 		var header = ["activated", "name", "description", "points", "solved_by"];
 		var chal = '<div class="container">';
 		chal += '<div class="row">';
@@ -59,7 +61,7 @@ function getChallenges(){
 		});
 		chal += '</div>';
 		chal += '</div>';
-		$("main").append(chal);
+		$("#challenges").append(chal);
 		$("#submitFlagForm").show();
 	}).fail(function (msg) {
 		$("#errDisplay").show();
@@ -73,7 +75,8 @@ function getChallenges(){
 $("#submitFlag").click(function(e){
 	e.preventDefault();
     $.post('api/team/submit', $('#submitFlagForm').serialize(), function(data, msg){
-        window.location.pathname = '/scoreboard.html';
+		getTeams();
+		getChallenges();
     }).fail(function(msg){
         $("#errDisplay").show();
         if(msg.responseJSON != undefined)

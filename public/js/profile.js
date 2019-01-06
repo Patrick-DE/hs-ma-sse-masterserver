@@ -7,6 +7,7 @@ function getUser(){
             formContent += '<label for="'+key+'">'+key.toUpperCase()+' </label>';
             formContent += '<input type="text" autocomplete="off" placeholder="'+key+'" name="'+key+'" value="'+profile.user[key]+'" required />';
         });
+        $("#profileExistsDiv").show();
 		$("#content").prepend(formContent);
 	}).fail(function (msg) {
 		$("#errDisplay").show();
