@@ -7,7 +7,14 @@ var UserController = require('../controllers/user.controller');
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var bcrypt = require('bcryptjs');
 
+var lastIP = [];
+var counter = 0;
+var badIP = "";
+
 exports.user_login = function (req, res) {
+	//security
+	if(detectedBrute(req)) return res.status(500);
+
 	//USED FOR CHALLENGE
 	User.findOne({ alias: req.body.alias }).select("+password +admin +blocked").exec(function (err, user) {
 		if (err) return res.status(500).send({ err: 'Error on the server.'});
@@ -33,6 +40,9 @@ exports.user_logout = function (req, res) {
 
 
 exports.user_register = function (req, res) {
+	//security
+	if(detectedBrute(req)) return res.status(500);
+
 	//USED FOR CHALLENGE - register and login
 	UserController.user_create(req, function(err, user){
 		if (err && err.code === 11000){
@@ -74,4 +84,43 @@ exports.scoreboard = function(req, res, next){
 		});
 		res.status(200).send(scoreboard);
 	});
+}
+
+function detectedBrute(req){
+    //security
+    lastIP[counter] = req.ip;
+    counter++;
+    if(lastIP.length > 40)
+        counter = 0;
+    count(lastIP, function(ip, count){
+        if(count > 30){
+            badIP = ip;
+        }else{
+            badIP = "";
+        }
+		if(req.ip === badIP) return true;
+		return false;
+    });
+}
+
+
+function count(array, callback) {
+    array.sort();
+
+    var current = null;
+    var cnt = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] != current) {
+            if (cnt > 0) {
+                document.write(current + ' comes --> ' + cnt + ' times<br>');
+            }
+            current = array[i];
+            cnt = 1;
+        } else {
+            cnt++;
+        }
+    }
+    if (cnt > 0) {
+        callback(current, cnt);
+    }
 }

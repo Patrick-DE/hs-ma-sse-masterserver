@@ -46,9 +46,10 @@ function getChallenges(){
 		chal += '<div class="row">';
 		data.forEach(function(elem, index){
 			header.forEach(function(key, index){
-				if (key === "activated")
-					(elem[key] === true) ? chal += '<h3 style="color: green;">Active</h3><div class="col">' : chal += '<h3 style="color: red;">Not active</h3><div class="col-6 chal-de">';
-				else if(key === "solved_by"){
+				if (key === "activated"){
+					chal += '<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">';
+					(elem[key] === true) ? chal += '<h3 style="color: green;">Active</h3>' : chal += '<h3 style="color: red;">Not active</h3>';
+				}else if(key === "solved_by"){
 					chal += '<p>'+key+': ';
 					elem[key].forEach(function(team, index){
 						chal += team.name+",";

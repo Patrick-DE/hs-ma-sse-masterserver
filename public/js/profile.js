@@ -1,7 +1,7 @@
 function getUser(){
 	$.getJSON('api/user/', function (profile) {
         $("#content").empty();
-        var header = ["alias", "name", "surename"];
+        var header = ["alias", "name", "surname"];
         var formContent ="<h3>Profile</h3>";
         header.forEach(function(key, index){
             formContent += '<label for="'+key+'">'+key.toUpperCase()+' </label>';
