@@ -86,13 +86,19 @@ exports.team_add_member = function(req, res, next) {
         if (!team_id) return res.status(400).send({ err: "Please join a team."});
 
         User.findOne({ alias: req.body.alias}, function(err, user){
-            Team.findByIdAndUpdate(team_id, {
-                $addToSet: { 
-                    members: user._id
+            exports.getTeamId(user._id, function(err, team_id){
+                if(team_id !== undefined){
+                    Team.findByIdAndUpdate(team_id, {
+                        $addToSet: { 
+                            members: user._id
+                        }
+                    }, {new: true}).exec(function(err, team){
+                        if (err) return res.status(500).send({ err: err.message });
+                        res.status(201).send(team);
+                    });
+                }else{
+                    res.status(400).send({ err: "This user is already a member of a team."});
                 }
-            }, {new: true}).exec(function(err, team){
-                if (err) return res.status(500).send({ err: err.message });
-                res.status(201).send(team);
             });
         })
     });

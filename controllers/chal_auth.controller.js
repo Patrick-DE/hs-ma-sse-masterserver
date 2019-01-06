@@ -22,13 +22,13 @@ exports.user_login = function (req, res) {
 		var token = create_token(user, req.ip);
 
 		// return the information including token as JSON
-		res.append("set-cookie", exports.setCookie("token", token, 1)).redirect("/scoreboard.html");
+		res.append("set-cookie", exports.setCookie("token", token, Number(process.env.TOKEN_EXPIRE))).redirect("/scoreboard.html");
 	});
 };
 
 
 exports.user_logout = function (req, res) {
-	res.append("set-cookie", exports.setCookie("token", null, 1)).redirect("/login.html");
+	res.append("set-cookie", exports.setCookie("token", null, Number(process.env.TOKEN_EXPIRE))).redirect("/login.html");
 };
 
 
@@ -51,7 +51,7 @@ exports.user_register = function (req, res) {
 function create_token(user, ip){
 	// create a token
 	var token = jwt.sign({ id: user._id, ip: ip, admin: user.admin}, process.env.SECRET, {
-		expiresIn: process.env.TOKEN_EXPIRE//3600=1h, 86400 expires in 24 hours
+		expiresIn: Number(process.env.TOKEN_EXPIRE)*60*60//3600=1h, 86400 expires in 24 hours
 	});
 
 	return token;
