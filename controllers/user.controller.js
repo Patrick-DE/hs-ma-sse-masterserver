@@ -9,6 +9,7 @@ var TeamController = require('./team.controller');
 // Handle user create. 
 exports.user_create = function(req, callback) {
     var newUser = new User(req.body);
+    if (newUser.surname === undefined) newUser.surname = "";
     if (newUser.admin !== undefined) delete newUser.admin;
     if (newUser.blocked !== undefined) delete newUser.blocked;
     if (newUser.team !== undefined) delete newUser.team;
@@ -22,7 +23,7 @@ exports.user_create = function(req, callback) {
 
 // Display detail page for a specific user.
 exports.user_detail = function(req, res, next) {
-    User.findById(req.userId).select("+surename").exec(function (err, user) {
+    User.findById(req.userId).select("+surname").exec(function (err, user) {
         if (err) return res.status(500).send({ err: err.message });
         TeamController.getTeamId(req.userId, function(err, team_id){
             if (err) return res.status(500).send({ err: err.message });

@@ -37,4 +37,31 @@ $("#editProfile").click(function(e){
     });
 });
 
+$('#deleteProfile').click(function(e){
+    e.preventDefault();
+    var choice = confirm("Are you sure you want to delete your user?\nEverything will be lost!");
+    if (choice == true) {
+        var choice1 = confirm("This is your last chance to click deny!");
+        if (choice1 == true) {
+            var choice2 = confirm("Don't cry afterwards!!!");
+            if (choice2 == true) {
+                $.ajax({
+                    url: 'api/user',
+                    type: 'DELETE',
+                    success: function(result) {
+                        window.location.pathname = '/api/logout';
+                    },
+                    error: function(msg,error) {
+                        $("#errDisplay").show();
+                        if(msg.responseJSON != undefined)
+                            $("#errmsg").text(msg.responseJSON.err);
+                        else
+                            $("#errmsg").text(msg.statusText);
+                    }
+                });
+            }
+        }
+    }
+});
+
 getUser();

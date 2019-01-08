@@ -17,16 +17,25 @@ $('#login').click(function(e){
 
 $('#register').click(function(e){
     e.preventDefault();
-    $.post('api/register', $('#registerForm').serialize(), function(data){
-        $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-        $("#successDisplay").show();
-    }).fail(function(msg){
-        $("#errDisplay").show();
-        if(msg.responseJSON != undefined)
-            $("#errmsg").text(msg.responseJSON.err);
-        else
-            $("#errmsg").text(msg.statusText);
+    var tmp = [];
+    $("#registerForm").find('input:password').each(function(index){
+        tmp[index] = $(this).val();
     });
+    if(tmp[0] !== tmp[1]){
+        $("#errmsg").text("Your passwords do not match!");
+        $("#errDisplay").show();
+    }else{
+        $.post('api/register', $('#registerForm').serialize(), function(data){
+            $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
+            $("#successDisplay").show();
+        }).fail(function(msg){
+            $("#errDisplay").show();
+            if(msg.responseJSON != undefined)
+                $("#errmsg").text(msg.responseJSON.err);
+            else
+                $("#errmsg").text(msg.statusText);
+        });
+    }
 });
 
 var tokenHeader = document.cookie;
