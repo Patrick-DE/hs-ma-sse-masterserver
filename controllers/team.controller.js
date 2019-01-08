@@ -147,13 +147,24 @@ exports.team_submit_flag = function(req, res, next) {
             exports.getTeamId(req.userId, function(err, team_id){
                 if (err) return res.status(500).send({ err: "Error while processing your team. Please report back!"});
                 if (!team_id) return res.status(400).send({ err: "Please join a team."});
+                if (challenge.provider === undefined) return res.status(500).send({ err: "The challenge is missing a provider."});
+                var teamIdObject = mongoose.Types.ObjectId(team_id);
+                if (challenge.provider.equals(teamIdObject)) return res.status(400).send({ err: "You are not allowed to submit your own flags."});
+                
                 // if user has a team update challenge
-                Challenge.findByIdAndUpdate(challenge._id, {
+                Challenge.findOneAndUpdate({
+                    $and: [
+                        {_id: challenge._id},
+                        {solved_by: 
+                            { $ne: teamIdObject}
+                        }
+                    ]}, {
                     $addToSet: { 
                         solved_by: team_id
                     }
                 }).exec(function(err, challenge){
-                    if (err || !challenge) return res.status(500).send({ err: "Error while registering points. Please report back!"});
+                    if (err) return res.status(500).send({ err: "Error while registering points. Please report back!"});
+                    if (!challenge) return res.status(400).send({ err: "You already submitted this flag."});
                     // if challenge was updated update team
                     Team.findByIdAndUpdate(team_id,{
                         $addToSet: { 

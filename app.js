@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 // create the app
 const app = express();
-app.disable('view cache');
+//app.disable('view cache');
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))

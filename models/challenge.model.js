@@ -9,7 +9,8 @@ var challengeSchema = new Schema({
     url: { type: String, required: true},
     description: String,
     flag: { type: String, select: false, unique: true },
-    solved_by: [ {type: mongoose.Schema.ObjectId, ref: 'teams'} ]
+    solved_by: [ {type: mongoose.Schema.ObjectId, ref: 'teams'} ],
+    provider: { type: mongoose.Schema.ObjectId, ref: 'teams'}
 });
 
 var Challenge = mongoose.model('challenges', challengeSchema);
