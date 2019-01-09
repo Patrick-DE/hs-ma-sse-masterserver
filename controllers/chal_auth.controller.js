@@ -13,7 +13,7 @@ var badIP = "";
 
 exports.user_login = function (req, res) {
 	//security
-	if(detectedBrute(req)) return res.status(500);
+	//if(detectedBrute(req)) return res.status(500);
 
 	//USED FOR CHALLENGE
 	User.findOne({ alias: req.body.alias }).select("+password +admin +blocked").exec(function (err, user) {
@@ -41,7 +41,7 @@ exports.user_logout = function (req, res) {
 
 exports.user_register = function (req, res) {
 	//security
-	if(detectedBrute(req)) return res.status(500);
+	//if(detectedBrute(req)) return res.status(500);
 
 	//USED FOR CHALLENGE - register and login
 	UserController.user_create(req, function(err, user){
@@ -86,6 +86,7 @@ exports.scoreboard = function(req, res, next){
 	});
 }
 
+/*
 function detectedBrute(req){
     //security
     lastIP[counter] = req.ip;
@@ -123,4 +124,4 @@ function count(array, callback) {
     if (cnt > 0) {
         callback(current, cnt);
     }
-}
+}*/
