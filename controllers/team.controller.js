@@ -86,8 +86,8 @@ exports.team_add_member = function(req, res, next) {
         if (!team_id) return res.status(400).send({ err: "Please join a team."});
 
         User.findOne({ alias: req.body.alias}, function(err, user){
-            exports.getTeamId(user._id, function(err, team_id){
-                if(team_id === undefined){
+            exports.getTeamId(user._id, function(err, existingTeam_id){
+                if(existingTeam_id === undefined){
                     Team.findByIdAndUpdate(team_id, {
                         $addToSet: { 
                             members: user._id
@@ -203,7 +203,7 @@ exports.team_submit_flag = function(req, res, next) {
 
 exports.getTeamId = function (userId, callback){
     Team.find(function(err, team){
-        var team_id = 0;
+        var team_id = undefined;
         if (!err){
             team.forEach(element => {
                 element.members.forEach(member => {
